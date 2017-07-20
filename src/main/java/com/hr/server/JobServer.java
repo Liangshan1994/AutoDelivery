@@ -68,7 +68,7 @@ public class JobServer {
 	// 用户信息
 	private static class UserInfo {
 		private static final String USERNAME = "707773854@qq.com";
-		private static final String PASSWORD = "ga5exe3Ru1o1S4K9CKmUVA==";// AES加密
+		private static final String PASSWORD = "ga5exe22u1o1S449CKmUCA==";// AES加密
 	}
 
 	// 公司性质枚举类
