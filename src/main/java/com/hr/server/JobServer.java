@@ -68,7 +68,7 @@ public class JobServer {
 	// 用户信息
 	private static class UserInfo {
 		private static final String USERNAME = "707773854@qq.com";
-		private static final String PASSWORD = "ga5exe22u1o1S449CKmUCA==";// AES加密
+		private static final String PASSWORD = "";// AES加密
 	}
 
 	// 公司性质枚举类
@@ -113,7 +113,14 @@ public class JobServer {
 
 	// 工作城市枚举类
 	enum jobArea {
-		北京("010000"), 上海("020000"), 广州("030200"), 深圳("040000"), 武汉("180200");
+		北京("010000"), 上海("020000"), 广州("030200"), 深圳("040000"), 武汉("180200"),西安("200200"),杭州("080200"),南京("070200"),成都("090200"),
+		重庆("060000"),东莞("030800"),大连("230300"),苏州("070300"),昆明("250200"),长沙("190200"),合肥("150200"),宁波("080300"),郑州("170200"),
+		天津("050000"),青岛("120300"),济南("120200"),哈尔滨("220200"),长春("240200"),福州("110200");
+		
+		/**
+		 * 这里用枚举有点不太通用且维护麻烦，因时间原因懒得改了，以后有时间再改成关键字自动匹配id
+		 * */ 
+		
 		private String areaId;
 
 		private jobArea(String areaId) {
@@ -137,7 +144,7 @@ public class JobServer {
 	private static final String[] IGNORE_COMPANY = { "软通动力", "中软国际", "网来云商", "烽火普天", "木仓科技", "亚鸿世纪", "智驾科技", "亚鸿世纪",
 			"九派", "中安消", "智慧易视" };
 	// 搜索的公司类型 不填写默认所有
-	private static final String[] SEARCH_COMPANY_TYPE = {};
+	private static final CompanyType[] SEARCH_COMPANY_TYPE = {};
 	// 需过滤的上班地址 只需写关键字
 	private static final String[] IGNORE_WORK_LOCATION = { "未来科技城", "藏龙岛", "创业街", "总部空间", "汤逊湖" };
 	// 精准上班地址 不写默认所有地址
@@ -147,7 +154,7 @@ public class JobServer {
 	// 月薪范围 格式 8000-12000
 	private static final String PROVIDES_ALARY = "10000-15000";
 	// 工作城市 不写默认北京
-	private static final String JOB_AREA = jobArea.武汉.areaId;
+	private static final jobArea JOB_AREA = jobArea.武汉;
 
 	// Header头
 	private static void setHeader(Connection conn, Method paramMethod) {
@@ -216,16 +223,16 @@ public class JobServer {
 		String ret = new String();
 		if (!StringUtils.isNullOrEmpty(PROVIDES_ALARY) && PROVIDES_ALARY.indexOf("-") != 0) {
 			String[] arr = PROVIDES_ALARY.split("-");
-			int s = get(Integer.valueOf(arr[0]));
-			int e = get(Integer.valueOf(arr[1]));
-			if (s < e) {
-				int tmp = s;
-				s = e;
-				e = tmp;
+			int start = get(Integer.valueOf(arr[0]));
+			int end = get(Integer.valueOf(arr[1]));
+			if (start < end) {
+				int tmp = start;
+				start = end;
+				end = tmp;
 			}
-			for (int i = e; i <= s; i++) {
+			for (int i = end; i <= start; i++) {
 				ret += "0" + i;
-				if (i != s) {
+				if (i != start) {
 					ret += "%2C";
 				}
 			}
@@ -240,45 +247,19 @@ public class JobServer {
 	 * @return
 	 */
 	private int get(int s) {
-		int ret = 0;
-
-		if (0 >= s && s <= 2000) {
-			return (1);
-		}
-		if (2000 >= s && s <= 3000) {
-			return (2);
-		}
-		if (3000 >= s && s <= 4500) {
-			return (3);
-		}
-		if (4500 >= s && s <= 6000) {
-			return (4);
-		}
-		if (6000 >= s && s <= 8000) {
-			return (5);
-		}
-		if (8000 >= s && s <= 10000) {
-			return (6);
-		}
-		if (10000 >= s && s <= 15000) {
-			return (7);
-		}
-		if (15000 >= s && s <= 20000) {
-			return (8);
-		}
-		if (20000 >= s && s <= 30000) {
-			return (9);
-		}
-		if (30000 >= s && s <= 40000) {
-			return (10);
-		}
-		if (40000 >= s && s <= 50000) {
-			return (11);
-		}
-		if (s > 50000) {
-			return (12);
-		}
-		return ret;
+		if (s <= 2000) return 1;
+		if (s <= 3000) return 2;
+		if (s <= 4500) return 3;
+		if (s <= 6000) return 4;
+		if (s <= 8000) return 5;
+		if (s <= 10000) return 6;
+		if (s <= 15000) return 7;
+		if (s <= 20000) return 8;
+		if (s <= 30000) return 9;
+		if (s <= 40000) return 10;
+		if (s <= 50000) return 11;
+		if (s > 50000) return 12;
+		return 0;
 	}
 
 	/**
@@ -301,7 +282,7 @@ public class JobServer {
 		}
 		try {
 			String keyWord = URLEncoder.encode(kw, "UTF-8");
-			String areaId = StringUtils.isNullOrEmpty(JOB_AREA) ? jobArea.北京.areaId : JOB_AREA;
+			String areaId = StringUtils.isNullOrEmpty(JOB_AREA) ? jobArea.北京.areaId : JOB_AREA.areaId;
 
 			String url = StringUtils.isNullOrEmpty(PROVIDES_ALARY)
 					? "http://search.51job.com/jobsearch/search_result.php?fromJs=1&jobarea=" + areaId
@@ -317,7 +298,7 @@ public class JobServer {
 
 			if (SEARCH_COMPANY_TYPE.length > 0) {
 				for (int i = 0; i < SEARCH_COMPANY_TYPE.length; i++) {
-					url += SEARCH_COMPANY_TYPE[i];
+					url += SEARCH_COMPANY_TYPE[i].getCode();
 					if (i != SEARCH_COMPANY_TYPE.length - 1) {
 						url += ",";
 					}
@@ -343,14 +324,18 @@ public class JobServer {
 			Elements e2 = e1.get(e1.size() - 1).select("a");
 
 			if (e2 != null && e2.size() > 0) {
-				getListPage(kw, list, indexPage + 1);// 递归翻页，可能会出现不可预知的错误（如递归 次数/层次 太多/深 造成的栈溢出），因时间问题暂不优化
+				getListPage(kw, list, indexPage + 1);// 递归翻页，可能会出现不可预知的错误（如递归
+														// 次数/层次 太多/深
+														// 造成的栈溢出），因时间问题暂不优化
 				/**
 				 * 最佳解决方案： 定义 stop 和 indexPage 全局变量，stop默认为true，indexPage默认0
 				 * 根据页面 结构/关键字 判断是否有下一页，如果有下一页，则stop=false，indexPage++
-				 * 外部定义一个方法，调用本方法，利用 for(;;){...} or while(true){...} 循环至stop=false为止
+				 * 外部定义一个方法，调用本方法，利用 for(;;){...} or while(true){...}
+				 * 循环至stop=false为止
 				 * 
-				 * 注 1：因为多线程的情况下indexPage++不可靠，固此处可用原子类，具体使用方式不懂的可以百度，当然，也可以用同步关键字synchronized（性能偏低）
-				 *     2：因需翻页，List集合需定义为全局变量（也可定义为引用传递），但要注意多线程所带来的资源不安全问题
+				 * 注 1：因为多线程的情况下indexPage++不可靠，固此处可用原子类，具体使用方式不懂的可以百度，当然，
+				 * 也可以用同步关键字synchronized（性能偏低）
+				 * 2：因需翻页，List集合需定义为全局变量（也可定义为引用传递），但要注意多线程所带来的资源不安全问题
 				 */
 			}
 		} catch (IOException e) {
@@ -447,16 +432,15 @@ public class JobServer {
 
 					if (SEARCH_ACCURATE_ADDRESS.length > 0000000000000) {
 						for (String str : SEARCH_ACCURATE_ADDRESS) {
-							int flag = 0;
 							String[] arr = ChineseSpliter.splitArr(str.toLowerCase());// 分词
-							for (String s : arr) {
-								if (address.contains(s.toLowerCase())) {// 匹配单个词
-									flag++;// 匹配
+							for (int i = 0; i < arr.length; i++) {
+								if (!address.contains(arr[i].toLowerCase())) {// 匹配单个词
+									break;
 								}
-							}
-							if (arr.length == flag) {// 判断是否全词匹配
-								acc_add = true;// 精准匹配正确
-								break;
+								if (arr.length == (i + 1)) {
+									acc_add = true;
+									break;
+								}
 							}
 						}
 					} else {
@@ -474,7 +458,7 @@ public class JobServer {
 	}
 
 	public void start() throws InterruptedException {
-		if (!login(UserInfo.USERNAME, AESUtils.decrypt(UserInfo.PASSWORD))) {
+		if (!login(UserInfo.USERNAME, AESUtils.encrypt(UserInfo.PASSWORD))) {
 			return;
 		}
 		List<String> list = getList();
@@ -487,11 +471,12 @@ public class JobServer {
 					if (entity.getSatisfy()) {
 						System.out.println(delivery(url) + "：" + entity.getCompanyName());
 						System.out.println("\t" + url);
-					} 
-//					else {
-//						System.err.println("不满足条件" + "：" + entity.getCompanyName());
-//						System.err.println("\t" + url);
-//					}
+					}
+					// else {
+					// System.err.println("不满足条件" + "：" +
+					// entity.getCompanyName());
+					// System.err.println("\t" + url);
+					// }
 				}
 			});
 		}
