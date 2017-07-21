@@ -201,7 +201,8 @@ public class JobServer {
 		try {
 			response = conn.execute();
 			cookies = response.cookies();
-			isLogin = response.parse() != null && response.parse().title().contains("Message Center") ? true : false;
+			Document doc = response.parse();
+			isLogin = doc != null && doc.title().contains("Message Center") ? true : false;
 			System.out.println(isLogin ? "登录成功！" : "登录失败！");
 			if (!isLogin || !selectDefault()) {
 				isLogin = false;
@@ -537,8 +538,7 @@ public class JobServer {
 
 				conn.data(map);
 
-				Document doc = conn.execute().parse();
-				String text = doc.text();
+				String text = conn.execute().parse().text();
 
 				if (text.contains("投递成功")) {
 					return Msg.SUCCESS;
@@ -577,8 +577,7 @@ public class JobServer {
 						+ "=1&Ccp_" + rsmid + "=100&Ecp_" + rsmid + "=0&IsCn=1&IsEn=0&coverid=&_=1492136469938";
 				Connection c = Jsoup.connect(baseUrl);
 				setHeader(c, Method.GET);
-				Document d = c.execute().parse();
-				select = d.text().contains("成功");
+				select = c.execute().parse().text().contains("成功");
 				System.out.println(select ? "快速投递设置成功！" : "快速投递设置失败！");
 			}
 		} catch (IOException e) {
