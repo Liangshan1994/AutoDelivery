@@ -1,4 +1,4 @@
-package com.hr.utils;
+package cn.ryan.utils;
 
 import java.io.IOException;
 import java.io.StringReader;

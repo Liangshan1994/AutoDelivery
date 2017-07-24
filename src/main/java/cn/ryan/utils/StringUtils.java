@@ -1,4 +1,4 @@
-package com.hr.utils;
+package cn.ryan.utils;
 
 public class StringUtils {
 

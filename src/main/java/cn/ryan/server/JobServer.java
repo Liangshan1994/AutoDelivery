@@ -1,4 +1,4 @@
-package com.hr.server;
+package cn.ryan.server;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -18,9 +18,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.hr.utils.AESUtils;
-import com.hr.utils.ChineseSpliter;
-import com.hr.utils.StringUtils;
+import cn.ryan.utils.AESUtils;
+import cn.ryan.utils.ChineseSpliter;
+import cn.ryan.utils.StringUtils;
 
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
@@ -353,7 +353,7 @@ public class JobServer {
 	 */
 	private List<String> getList(final int... page) {
 		final List<String> list = new ArrayList<>();
-		ExecutorService exe = Executors.newFixedThreadPool(100);
+		ExecutorService exe = Executors.newFixedThreadPool(50);
 		for (final String kw : SEARCH_KEY_WORD) {
 			exe.execute(new Runnable() {
 				@Override

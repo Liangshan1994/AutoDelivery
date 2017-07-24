@@ -1,4 +1,4 @@
-package com.hr.task;
+package cn.ryan.task;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.hr.server.JobServer;
+import cn.ryan.server.JobServer;
 
 public class Task {
 
